@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model customer {
+  id   Int    @id @default(autoincrement())
+  uuid String @unique(map: "uuid") @db.Char(36)
+  name String @db.VarChar(255)
+  part part[]
+
+  @@index([uuid], map: "uuid_2")
+}
+
+model file {
+  id                        Int                         @id @default(autoincrement())
+  uuid                      String                      @unique(map: "uuid") @db.Char(36)
+  type                      String                      @db.VarChar(255)
+  location                  String                      @db.VarChar(255)
+  part_revision             part_revision[]
+  process_run_file_artifact process_run_file_artifact[]
+
+  @@index([uuid], map: "uuid_2")
+}
+
+model part {
+  id            Int             @id @default(autoincrement())
+  uuid          String          @unique(map: "uuid") @db.Char(36)
+  name          String          @db.VarChar(255)
+  customer_uuid String          @db.Char(36)
+  customer      customer        @relation(fields: [customer_uuid], references: [uuid], onUpdate: Restrict, map: "part_ibfk_1")
+  part_revision part_revision[]
+
+  @@index([customer_uuid], map: "customer_uuid")
+  @@index([uuid], map: "uuid_2")
+}
+
+model part_revision {
+  id                 Int     @id @default(autoincrement())
+  uuid               String  @unique(map: "uuid") @db.Char(36)
+  name               String  @db.VarChar(255)
+  part_uuid          String  @db.Char(36)
+  geometry_file_uuid String  @db.Char(36)
+  part               part    @relation(fields: [part_uuid], references: [uuid], onUpdate: Restrict, map: "part_revision_ibfk_1")
+  file               file    @relation(fields: [geometry_file_uuid], references: [uuid], onUpdate: Restrict, map: "part_revision_ibfk_2")
+  trial              trial[]
+
+  @@index([geometry_file_uuid], map: "geometry_file_uuid")
+  @@index([part_uuid], map: "part_uuid")
+  @@index([uuid], map: "uuid_2")
+}
+
+model process_run {
+  id                        Int                         @id @default(autoincrement())
+  uuid                      String                      @unique(map: "uuid") @db.Char(36)
+  type                      String                      @db.VarChar(255)
+  trial_uuid                String                      @db.Char(36)
+  trial                     trial                       @relation(fields: [trial_uuid], references: [uuid], onUpdate: Restrict, map: "process_run_ibfk_1")
+  process_run_file_artifact process_run_file_artifact[]
+
+  @@index([trial_uuid], map: "trial_uuid")
+  @@index([uuid], map: "uuid_2")
+}
+
+model process_run_file_artifact {
+  id                 Int         @id @default(autoincrement())
+  uuid               String      @unique(map: "uuid") @db.Char(36)
+  process_run_uuid   String      @db.Char(36)
+  file_artifact_uuid String      @db.Char(36)
+  process_run        process_run @relation(fields: [process_run_uuid], references: [uuid], onUpdate: Restrict, map: "process_run_file_artifact_ibfk_1")
+  file               file        @relation(fields: [file_artifact_uuid], references: [uuid], onUpdate: Restrict, map: "process_run_file_artifact_ibfk_2")
+
+  @@index([file_artifact_uuid], map: "file_artifact_uuid")
+  @@index([process_run_uuid], map: "process_run_uuid")
+  @@index([uuid], map: "uuid_2")
+}
+
+model trial {
+  id                 Int           @id @default(autoincrement())
+  uuid               String        @unique(map: "uuid") @db.Char(36)
+  part_revision_uuid String        @db.Char(36)
+  success            Boolean?
+  process_run        process_run[]
+  part_revision      part_revision @relation(fields: [part_revision_uuid], references: [uuid], onUpdate: Restrict, map: "trial_ibfk_1")
+
+  @@index([part_revision_uuid], map: "part_revision_uuid")
+  @@index([uuid], map: "uuid_2")
+}
