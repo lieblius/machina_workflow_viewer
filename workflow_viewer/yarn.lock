@@ -370,10 +370,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tabler/icons-react@npm:^2.46.0":
+  version: 2.46.0
+  resolution: "@tabler/icons-react@npm:2.46.0"
+  dependencies:
+    "@tabler/icons": "npm:2.46.0"
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0
+  checksum: 938f03f7b42017bc95e6dadb5e68cc3b7e5c5aa834503ba6e92a6e958323a59a8774502a4f82a36368315657bb144be4d5798cbf7928d4946ffc737e9235cf70
+  languageName: node
+  linkType: hard
+
+"@tabler/icons@npm:2.46.0":
+  version: 2.46.0
+  resolution: "@tabler/icons@npm:2.46.0"
+  checksum: 92c1c28f89f8be5a16cbfd89dcd88b3022c422c17d9ba30acad2e4abd62d6030f454687f636cb31a201b9cc2fed4ebbfc06925607a0b51ed2256fc8495698ab9
+  languageName: node
+  linkType: hard
+
 "@types/json5@npm:^0.0.29":
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 6bf5337bc447b706bb5b4431d37686aa2ea6d07cfd6f79cc31de80170d6ff9b1c7384a9c0ccbc45b3f512bae9e9f75c2e12109806a15331dc94e8a8db6dbb4ac
+  languageName: node
+  linkType: hard
+
+"@types/mime-types@npm:^2":
+  version: 2.1.4
+  resolution: "@types/mime-types@npm:2.1.4"
+  checksum: a10d57881d14a053556b3d09292de467968d965b0a06d06732c748da39b3aa569270b5b9f32529fd0e9ac1e5f3b91abb894f5b1996373254a65cb87903c86622
   languageName: node
   linkType: hard
 
@@ -2440,6 +2466,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mime-db@npm:1.52.0":
+  version: 1.52.0
+  resolution: "mime-db@npm:1.52.0"
+  checksum: 0557a01deebf45ac5f5777fe7740b2a5c309c6d62d40ceab4e23da9f821899ce7a900b7ac8157d4548ddbb7beffe9abc621250e6d182b0397ec7f10c7b91a5aa
+  languageName: node
+  linkType: hard
+
+"mime-types@npm:^2.1.35":
+  version: 2.1.35
+  resolution: "mime-types@npm:2.1.35"
+  dependencies:
+    mime-db: "npm:1.52.0"
+  checksum: 82fb07ec56d8ff1fc999a84f2f217aa46cb6ed1033fefaabd5785b9a974ed225c90dc72fff460259e66b95b73648596dbcc50d51ed69cdf464af2d237d3149b2
+  languageName: node
+  linkType: hard
+
 "minimatch@npm:^3.0.4, minimatch@npm:^3.0.5, minimatch@npm:^3.1.1, minimatch@npm:^3.1.2":
   version: 3.1.2
   resolution: "minimatch@npm:3.1.2"
@@ -3842,11 +3884,14 @@ __metadata:
     "@mantine/core": "npm:7.4.1"
     "@mantine/hooks": "npm:7.4.1"
     "@prisma/client": "npm:^5.8.1"
+    "@tabler/icons-react": "npm:^2.46.0"
+    "@types/mime-types": "npm:^2"
     "@types/node": "npm:20.8.10"
     "@types/react": "npm:18.2.36"
     "@types/react-dom": "npm:18.2.14"
     eslint: "npm:8.53.0"
     eslint-config-next: "npm:14.0.1"
+    mime-types: "npm:^2.1.35"
     next: "npm:14.0.1"
     postcss: "npm:^8.4.31"
     postcss-preset-mantine: "npm:1.12.3"

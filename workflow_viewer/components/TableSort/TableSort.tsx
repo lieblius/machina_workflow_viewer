@@ -13,7 +13,9 @@ import {
   Flex,
   Anchor,
   useMantineTheme,
+  Modal,
 } from "@mantine/core";
+import mime from "mime-types";
 import {
   IconSelector,
   IconChevronDown,
@@ -21,6 +23,7 @@ import {
   IconSearch,
   IconFolder,
   IconFileText,
+  IconFile3d,
 } from "@tabler/icons-react";
 import classes from "./TableSort.module.css";
 import Link from "next/link";
@@ -83,17 +86,19 @@ function sortData(
   );
 }
 
-interface TableSortProps {
-  data: RowData[];
+function isTextFile(extension: string) {
+  const mimeType = mime.lookup(extension);
+  return mimeType && mimeType.startsWith("text/");
 }
 
-export function TableSort({ data }: TableSortProps) {
+export function TableSort({ data }: { data: RowData[] }) {
   const theme = useMantineTheme();
   const path = ((p) => (p.endsWith("/") ? p.slice(0, -1) : p))(usePathname());
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState(data);
   const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
+  const [openedModalId, setOpenedModalId] = useState<null | string>(null);
 
   const setSorting = (field: keyof RowData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
@@ -115,63 +120,85 @@ export function TableSort({ data }: TableSortProps) {
       <Table.Td>
         <Flex justify="space-between">
           {row.file ? (
-            row.name
+            isTextFile(row.name.split(".").pop()) ? (
+              <>
+                <Modal
+                  opened={openedModalId === row.name}
+                  onClose={() => setOpenedModalId(null)}
+                  title={row.name}
+                  scrollAreaComponent={ScrollArea.Autosize}
+                ></Modal>
+                <UnstyledButton onClick={() => setOpenedModalId(row.name)}>
+                  {row.name}
+                </UnstyledButton>
+                <IconFileText />
+              </>
+            ) : (
+              <>
+                {row.name}
+                <IconFile3d />
+              </>
+            )
           ) : (
-            <Anchor
-              component={Link}
-              href={`${path}/${row.uuid}`}
-              underline="never"
-              c={theme.colors.dark[0]}
-            >
-              {row.name}
-            </Anchor>
+            <>
+              <Anchor
+                component={Link}
+                href={`${path}/${row.uuid}`}
+                underline="never"
+                c={theme.colors.dark[0]}
+              >
+                {row.name}
+              </Anchor>
+              <IconFolder />
+            </>
           )}
-          {row.file ? <IconFileText /> : <IconFolder />}
         </Flex>
       </Table.Td>
     </Table.Tr>
   ));
 
   return (
-    <ScrollArea>
-      <TextInput
-        placeholder="Search by any field"
-        mb="md"
-        leftSection={
-          <IconSearch
-            style={{ width: rem(16), height: rem(16) }}
-            stroke={1.5}
-          />
-        }
-        value={search}
-        onChange={handleSearchChange}
-      />
-      <Table horizontalSpacing="md" verticalSpacing="xs" layout="fixed">
-        <Table.Tbody>
-          <Table.Tr>
-            <Th
-              sorted={sortBy === "name"}
-              reversed={reverseSortDirection}
-              onSort={() => setSorting("name")}
-            >
-              Name
-            </Th>
-          </Table.Tr>
-        </Table.Tbody>
-        <Table.Tbody>
-          {rows.length > 0 ? (
-            rows
-          ) : (
+    <>
+      <ScrollArea>
+        <TextInput
+          placeholder="Search by any field"
+          mb="md"
+          leftSection={
+            <IconSearch
+              style={{ width: rem(16), height: rem(16) }}
+              stroke={1.5}
+            />
+          }
+          value={search}
+          onChange={handleSearchChange}
+        />
+        <Table horizontalSpacing="md" verticalSpacing="xs" layout="fixed">
+          <Table.Tbody>
             <Table.Tr>
-              <Table.Td>
-                <Text fw={500} ta="center">
-                  Nothing found
-                </Text>
-              </Table.Td>
+              <Th
+                sorted={sortBy === "name"}
+                reversed={reverseSortDirection}
+                onSort={() => setSorting("name")}
+              >
+                Name
+              </Th>
             </Table.Tr>
-          )}
-        </Table.Tbody>
-      </Table>
-    </ScrollArea>
+          </Table.Tbody>
+          <Table.Tbody>
+            {rows.length > 0 ? (
+              rows
+            ) : (
+              <Table.Tr>
+                <Table.Td>
+                  <Text fw={500} ta="center">
+                    Nothing found
+                  </Text>
+                </Table.Td>
+              </Table.Tr>
+            )}
+          </Table.Tbody>
+        </Table>
+      </ScrollArea>
+    </>
   );
 }
