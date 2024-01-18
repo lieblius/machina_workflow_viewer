@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   Table,
   ScrollArea,
@@ -14,6 +14,12 @@ import {
   Anchor,
   useMantineTheme,
   Modal,
+  Loader,
+  LoadingOverlay,
+  Container,
+  Textarea,
+  Input,
+  Button,
 } from "@mantine/core";
 import mime from "mime-types";
 import {
@@ -29,6 +35,8 @@ import classes from "./TableSort.module.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RowData } from "../../lib/directoryStructure";
+import readFileContent from "../../lib/readFileContent";
+import React from "react";
 
 interface ThProps {
   children: React.ReactNode;
@@ -88,7 +96,9 @@ function sortData(
 
 function isTextFile(extension: string) {
   const mimeType = mime.lookup(extension);
-  return mimeType && mimeType.startsWith("text/");
+  return (
+    mimeType && (mimeType.startsWith("text/") || mimeType.endsWith("/json"))
+  );
 }
 
 export function TableSort({ data }: { data: RowData[] }) {
@@ -99,6 +109,8 @@ export function TableSort({ data }: { data: RowData[] }) {
   const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
   const [openedModalId, setOpenedModalId] = useState<null | string>(null);
+  const [location, setLocation] = useState("");
+  const [file, setFile] = useState("");
 
   const setSorting = (field: keyof RowData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
@@ -115,46 +127,119 @@ export function TableSort({ data }: { data: RowData[] }) {
     );
   };
 
+  const FileContent = ({ location }: any) => {
+    const [fileContent, setFileContent] = useState("");
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      setLoading(true);
+      (async () => {
+        if (location) {
+          console.log(`public/files/${location}`);
+          setFileContent(await readFileContent(`public/files/${location}`));
+          setLoading(false);
+        }
+      })();
+    }, [location]);
+
+    if (loading) {
+      return (
+        <Center>
+          <Loader m="xl" color={theme.colors.dark[0]} />
+        </Center>
+      );
+    }
+
+    return (
+      <Textarea
+        defaultValue={fileContent}
+        autosize
+        minRows={10}
+        maxRows={20}
+        styles={{ input: { color: theme.colors.dark[0] } }}
+        readOnly
+      />
+    );
+  };
+
+  const downloadFile = () => {
+    const link = document.createElement("a");
+    link.href = `/files/${location}`; // Replace with your file's URL
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const rows: any = sortedData.map((row: any) => (
-    <Table.Tr key={row.name}>
-      <Table.Td>
-        <Flex justify="space-between">
-          {row.file ? (
-            isTextFile(row.name.split(".").pop()) ? (
+    <>
+      <Modal
+        opened={openedModalId === row.name}
+        onClose={() => {
+          setOpenedModalId(null);
+          setFile("");
+          setLocation("");
+        }}
+        title={row.name}
+        size="xl"
+        scrollAreaComponent={({ children }) => (
+          <ScrollArea.Autosize>{children}</ScrollArea.Autosize>
+        )}
+      >
+        {isTextFile(row.name.split(".").pop()) ? (
+          <FileContent location={location} />
+        ) : (
+          <Textarea
+            defaultValue="Preview not available."
+            autosize
+            minRows={10}
+            maxRows={20}
+            styles={{ input: { color: theme.colors.dark[0] } }}
+            readOnly
+          />
+        )}
+
+        <Center>
+          <Button onClick={downloadFile} mt="md">
+            Download
+          </Button>
+        </Center>
+      </Modal>
+      <Table.Tr key={row.name}>
+        <Table.Td>
+          <Flex justify="space-between">
+            {row.file ? (
               <>
-                <Modal
-                  opened={openedModalId === row.name}
-                  onClose={() => setOpenedModalId(null)}
-                  title={row.name}
-                  scrollAreaComponent={ScrollArea.Autosize}
-                ></Modal>
-                <UnstyledButton onClick={() => setOpenedModalId(row.name)}>
+                <UnstyledButton
+                  onClick={() => {
+                    setOpenedModalId(row.name);
+                    setLocation(row.location);
+                  }}
+                >
                   {row.name}
                 </UnstyledButton>
-                <IconFileText />
+                {isTextFile(row.name.split(".").pop()) ? (
+                  <IconFileText />
+                ) : (
+                  <IconFile3d />
+                )}
               </>
             ) : (
               <>
-                {row.name}
-                <IconFile3d />
+                <Anchor
+                  component={Link}
+                  href={`${path}/${row.uuid}`}
+                  underline="never"
+                  c={theme.colors.dark[0]}
+                >
+                  {row.name}
+                </Anchor>
+                <IconFolder />
               </>
-            )
-          ) : (
-            <>
-              <Anchor
-                component={Link}
-                href={`${path}/${row.uuid}`}
-                underline="never"
-                c={theme.colors.dark[0]}
-              >
-                {row.name}
-              </Anchor>
-              <IconFolder />
-            </>
-          )}
-        </Flex>
-      </Table.Td>
-    </Table.Tr>
+            )}
+          </Flex>
+        </Table.Td>
+      </Table.Tr>
+    </>
   ));
 
   return (
