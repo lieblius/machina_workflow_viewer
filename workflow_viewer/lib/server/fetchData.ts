@@ -1,5 +1,7 @@
 import prisma from "./prisma";
-import { models, directories, RowData } from "./directoryStructure";
+import { models, directories } from "./directoryStructure";
+import { RowData } from "../interfaces";
+import { lastSegment, upperFirst } from "../shared/utils";
 
 function buildQuery(path: string[]) {
   if (path.length === 0) return {};
@@ -21,10 +23,10 @@ async function fetchDirectoryData(
 ) {
   let data =
     (await models[directories[path.length].child]?.findMany(query)) ?? [];
-
   data = data.map((obj: { uuid: string; name?: string }) => ({
     uuid: obj.uuid,
-    name: obj.name || obj.uuid,
+    name:
+      obj.name || `${upperFirst(directories[path.length].child)} ${obj.uuid}`,
     file: false,
   }));
 
@@ -45,7 +47,7 @@ async function fetchFileData(path: string[], query: { [key: string]: any }) {
 
   data = data.map((obj: { [key: string]: any }) => ({
     uuid: obj.uuid,
-    name: obj.location.split("/")?.pop() ?? "",
+    name: lastSegment(obj.location, "/"),
     file: true,
     location: obj.location,
   }));

@@ -8,16 +8,22 @@ import {
   Title,
   useMantineTheme,
 } from "@mantine/core";
+import Link from "next/link";
 
 export default function Shell({ children }: { children: any }) {
   const theme = useMantineTheme();
 
   return (
-    <AppShell header={{ height: "5em" }} padding="xl">
+    <AppShell header={{ height: "5em" }} padding="lg">
       <AppShell.Header withBorder={true}>
         <Container p="1em">
           <Center>
-            <Anchor href="/" underline="never" c={theme.colors.dark[0]}>
+            <Anchor
+              component={Link}
+              href="/"
+              underline="never"
+              c={theme.colors.dark[0]}
+            >
               <Title>Workflow Viewer</Title>
             </Anchor>
           </Center>

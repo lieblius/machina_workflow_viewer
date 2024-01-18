@@ -1,18 +1,5 @@
+import { Directory } from "../interfaces";
 import prisma from "./prisma";
-
-export interface RowData {
-  name: string;
-  uuid: string;
-  file: any;
-  location?: string;
-}
-
-export interface Directory {
-  name: string;
-  child: string;
-  hasFiles: boolean;
-  fileRelationNodes?: string[];
-}
 
 export const models: { [key: string]: any } = {
   customer: prisma.customer,
