@@ -15,7 +15,7 @@ interface ThProps {
   sorted: boolean;
   onSort(): void;
 }
-export function Th({ children, reversed, sorted, onSort }: ThProps) {
+export default function Th({ children, reversed, sorted, onSort }: ThProps) {
   const Icon = sorted
     ? reversed
       ? IconChevronUp

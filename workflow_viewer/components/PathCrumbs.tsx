@@ -8,7 +8,7 @@ interface PathCrumbsProps {
   uuidToNames: { [key: string]: string };
 }
 
-export function PathCrumbs({ uuidToNames = {} }: PathCrumbsProps) {
+export default function PathCrumbs({ uuidToNames = {} }: PathCrumbsProps) {
   const theme = useMantineTheme();
   const [items, setItems] = useState<React.ReactNode[]>([]);
 

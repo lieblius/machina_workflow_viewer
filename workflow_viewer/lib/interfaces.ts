@@ -9,5 +9,5 @@ export interface Directory {
   name: string;
   child: string;
   hasFiles: boolean;
-  fileRelationNodes?: string[];
+  fileRelationNodes?: string[]; // Link files to the current directory
 }

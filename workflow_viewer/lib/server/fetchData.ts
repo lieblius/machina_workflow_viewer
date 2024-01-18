@@ -3,6 +3,7 @@ import { models, directories } from "./directoryStructure";
 import { RowData } from "../interfaces";
 import { lastSegment, upperFirst } from "../shared/utils";
 
+// Builds a prisma query reflecting the directory structure stored in the path
 function buildQuery(path: string[]) {
   if (path.length === 0) return {};
 
@@ -17,6 +18,7 @@ function buildQuery(path: string[]) {
   return query;
 }
 
+// Fetches associated elements in the child table as a subdirectories
 async function fetchDirectoryData(
   path: string[],
   query: { [key: string]: any }
@@ -33,6 +35,7 @@ async function fetchDirectoryData(
   return data;
 }
 
+// Fetches associated files to the parent table, navigating nested relations if necessary
 async function fetchFileData(path: string[], query: { [key: string]: any }) {
   const frn = directories[path.length]?.fileRelationNodes ?? [];
   for (let i = 0; i < frn.length; i++) query.where = { [frn[i]]: query.where };
@@ -55,6 +58,7 @@ async function fetchFileData(path: string[], query: { [key: string]: any }) {
   return data;
 }
 
+// Fetches data to form current file tree level by denoting subdirectories and files as defined by the directory structure
 export default async function fetchData(path: string[]): Promise<RowData[]> {
   if (path.length >= directories.length) return [];
 

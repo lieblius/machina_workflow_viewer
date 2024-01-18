@@ -35,8 +35,8 @@ Our users are our Machina teammates who are doing the R&D for customers. We stor
 - [Install](https://docs.docker.com/desktop/) and run Docker
 
 ### Running the Application
-You can start the application as follows. The first time it runs, it will run `init.sql` to create tables and populate them with some seed data.  
-```
-docker compose up
-```
+The following will bring up an instance of the application and  MySQL. The first time MySQL is started, it will run init.sql to create tables and populate them with some seed data. The application will wait until the database is healthy to start.
 
+```docker compose up```
+
+It will then be live at http://localhost:3000

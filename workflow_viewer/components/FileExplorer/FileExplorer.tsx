@@ -27,12 +27,12 @@ import { usePathname } from "next/navigation";
 import { RowData } from "../../lib/interfaces";
 import React from "react";
 
-import { Th } from "./Th";
+import Th from "./Th";
 import { downloadFile, isTextFile, sortData } from "../../lib/client/utils";
 import { lastSegment } from "../../lib/shared/utils";
 import FileContent from "../FileContent";
 
-export function FileExplorer({ data }: { data: RowData[] }) {
+export default function FileExplorer({ data }: { data: RowData[] }) {
   const theme = useMantineTheme();
   const path = ((p) => (p.endsWith("/") ? p.slice(0, -1) : p))(usePathname()); // no slashes at root
   const [search, setSearch] = useState("");

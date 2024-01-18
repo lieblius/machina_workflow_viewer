@@ -11,7 +11,6 @@ export default function FileContent({ location }: any) {
     setLoading(true);
     (async () => {
       if (location) {
-        console.log(`public/files/${location}`);
         setFileContent(await readFileContent(`public/files/${location}`));
         setLoading(false);
       }
