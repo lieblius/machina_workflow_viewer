@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import fetchData from "../../lib/server/fetchData";
 import { FileExplorer } from "../../components/FileExplorer/FileExplorer";
 import Shell from "../../components/Shell";
